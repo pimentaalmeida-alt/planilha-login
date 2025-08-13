@@ -1,41 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Login com Google para Planilha</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+<meta charset="UTF-8">
+<title>Login com Google</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+</style>
 </head>
 <body>
-  <h2>Login com Google</h2>
 
-  <!-- Configuração do Google One Tap -->
-  <div id="g_id_onload"
-       data-client_id="1028119812736-rp5m9cnbplccdqbcsltd7gvt140dtaod.apps.googleusercontent.com"
-       data-callback="handleCredentialResponse">
-  </div>
-  <div class="g_id_signin" data-type="standard"></div>
+<h2>Login</h2>
+<div id="g_id_onload"
+     data-client_id="SEU_CLIENT_ID.apps.googleusercontent.com"
+     data-context="signin"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+</div>
+<div class="g_id_signin"
+     data-type="standard"
+     data-shape="rectangular"
+     data-theme="outline"
+     data-text="signin_with"
+     data-size="large"
+     data-logo_alignment="left">
+</div>
 
-  <script>
-    function handleCredentialResponse(response) {
-      // Envia o token para o backend
-      fetch("https://script.google.com/macros/s/AKfycbwQSdpfdcckK_CifR1OLQ2SuFWN45EbO9x5y2ib9DkIzJcc0IB-LuImHqKH4mvekw/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: response.credential })
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          // Redireciona para a planilha
-          window.location.href = data.url;
-        } else {
-          alert(data.message || "Falha no login");
-        }
-      })
-      .catch(err => {
-        alert("Erro de conexão: " + err);
-      });
+<script>
+async function handleCredentialResponse(response) {
+  try {
+    const backendUrl = "https://script.google.com/macros/s/AKfycbwQSdpfdcckK_CifR1OLQ2SuFWN45EbO9x5y2ib9DkIzJcc0IB-LuImHqKH4mvekw/exec";
+
+    const res = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: response.credential })
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+    } else {
+      alert(data.message || "Falha no login!");
     }
-  </script>
+
+  } catch (err) {
+    alert("Erro: " + err.message);
+  }
+}
+</script>
+
 </body>
 </html>
