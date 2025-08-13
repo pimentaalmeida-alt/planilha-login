@@ -68,6 +68,7 @@
     async function handleCredentialResponse(response) {
       try {
         // ATENÇÃO: Substitua a URL abaixo pela URL de sua API do Apps Script (após deploy).
+        // Verifique se o URL de origem do seu GitHub Pages está autorizado nas credenciais do Google Cloud.
         const backendUrl = "https://script.google.com/macros/s/AKfycbxZL3omg_nLNqgpqY9M1uWt0vK262cOkSjPkID1_qsnIG5e3eWt4y6ZlZdJ13eHunaI/exec";
 
         const res = await fetch(backendUrl, {
@@ -81,7 +82,7 @@
         if (data.success && data.redirectUrl) {
           window.location.href = data.redirectUrl;
         } else {
-          showErrorModal(data.message || "Falha no login!");
+          showErrorModal(data.message || "Falha no login! (Erro 401 pode indicar um problema com o ID do cliente ou URLs autorizados no Google Cloud)");
         }
       } catch (err) {
         showErrorModal("Erro: Não foi possível conectar ao servidor. Verifique a URL do backend e a configuração de CORS.");
