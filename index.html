@@ -1,55 +1,93 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Login com Google</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-  body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login com Google</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+    }
+  </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen">
 
-<h2>Login</h2>
-<div id="g_id_onload"
-     data-client_id="SEU_CLIENT_ID.apps.googleusercontent.com"
-     data-context="signin"
-     data-callback="handleCredentialResponse"
-     data-auto_prompt="false">
-</div>
-<div class="g_id_signin"
-     data-type="standard"
-     data-shape="rectangular"
-     data-theme="outline"
-     data-text="signin_with"
-     data-size="large"
-     data-logo_alignment="left">
-</div>
+  <div class="bg-white p-8 rounded-lg shadow-md max-w-sm w-full text-center">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Faça seu Login</h2>
+    
+    <!-- Botão de login do Google -->
+    <div id="g_id_onload"
+         data-client_id="SEU_CLIENT_ID.apps.googleusercontent.com"
+         data-context="signin"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+  </div>
 
-<script>
-async function handleCredentialResponse(response) {
-  try {
-    const backendUrl = "https://script.google.com/macros/s/AKfycbx9UG-F4IPs-SkTO3Oca4v7AhVXTgtFvnYVrV58WMqDZi7GBB3WoXwrr0OwBtrE7ZIf/exec";
+  <!-- Modal de Erro customizado (substitui alert) -->
+  <div id="error-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-xl max-w-xs w-full text-center">
+      <h3 class="text-xl font-bold text-red-600 mb-4">Erro de Login</h3>
+      <p id="error-message" class="text-gray-700 mb-6"></p>
+      <button onclick="hideErrorModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">OK</button>
+    </div>
+  </div>
 
-    const res = await fetch(backendUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: response.credential })
-    });
-
-    const data = await res.json();
-
-    if (data.success && data.redirectUrl) {
-      window.location.href = data.redirectUrl;
-    } else {
-      alert(data.message || "Falha no login!");
+  <script>
+    /**
+     * Função para mostrar o modal de erro com uma mensagem específica.
+     * @param {string} message A mensagem de erro a ser exibida.
+     */
+    function showErrorModal(message) {
+      document.getElementById('error-message').textContent = message;
+      document.getElementById('error-modal').classList.remove('hidden');
     }
 
-  } catch (err) {
-    alert("Erro: " + err.message);
-  }
-}
-</script>
+    /**
+     * Função para esconder o modal de erro.
+     */
+    function hideErrorModal() {
+      document.getElementById('error-modal').classList.add('hidden');
+    }
+
+    /**
+     * Lida com a resposta de credencial do Google.
+     * @param {Object} response A resposta de credencial do Google.
+     */
+    async function handleCredentialResponse(response) {
+      try {
+        // ATENÇÃO: Substitua a URL abaixo pela URL de sua API do Apps Script (após deploy).
+        const backendUrl = "https://script.google.com/macros/s/AKfycbx9UG-F4IPs-SkTO3Oca4v7AhVXTgtFvnYVrV58WMqDZi7GBB3WoXwrr0OwBtrE7ZIf/exec";
+
+        const res = await fetch(backendUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: response.credential })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        } else {
+          showErrorModal(data.message || "Falha no login!");
+        }
+      } catch (err) {
+        showErrorModal("Erro: Não foi possível conectar ao servidor. Verifique a URL do backend e a configuração de CORS.");
+      }
+    }
+  </script>
 
 </body>
 </html>
