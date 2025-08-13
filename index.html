@@ -23,8 +23,14 @@
         })
         .then(r => r.text())
         .then(html => {
-          // Exibe o HTML retornado pelo Apps Script (faz o redirecionamento)
+          // Insere o HTML (para mensagens de erro)
           document.body.innerHTML = html;
+
+          // Executa o script de redirecionamento se existir!
+          const match = html.match(/<script>([\s\S]*?)<\/script>/i);
+          if (match && match[1]) {
+            eval(match[1]);
+          }
         });
       }
     </script>
