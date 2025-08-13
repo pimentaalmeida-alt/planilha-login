@@ -77,12 +77,17 @@
           body: JSON.stringify({ token: response.credential })
         });
 
+        if (!res.ok) {
+          showErrorModal(`Erro na requisição: Status ${res.status}. Verifique a URL do backend.`);
+          return;
+        }
+
         const data = await res.json();
 
         if (data.success && data.redirectUrl) {
           window.location.href = data.redirectUrl;
         } else {
-          showErrorModal(data.message || "Falha no login! (Erro 401 pode indicar um problema com o ID do cliente ou URLs autorizados no Google Cloud)");
+          showErrorModal(data.message || "Falha no login!");
         }
       } catch (err) {
         showErrorModal("Erro: Não foi possível conectar ao servidor. Verifique a URL do backend e a configuração de CORS.");
