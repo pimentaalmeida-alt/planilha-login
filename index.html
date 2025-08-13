@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login com Google para Planilha</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <h2>Login com Google</h2>
+    <div id="g_id_onload"
+         data-client_id="SEU_CLIENT_ID_AQUI"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <script>
+      function handleCredentialResponse(response) {
+        fetch("URL_DO_SEU_WEBAPP", {
+          method: "POST",
+          body: JSON.stringify({ token: response.credential }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(r => r.text())
+        .then(r => {
+          document.body.innerHTML = r; // Redireciona para a planilha
+        });
+      }
+    </script>
+  </body>
+</html>
