@@ -68,13 +68,14 @@
     async function handleCredentialResponse(response) {
       try {
         // ATENÇÃO: Substitua a URL abaixo pela URL de sua API do Apps Script (após deploy).
-        // Verifique se o URL de origem do seu GitHub Pages está autorizado nas credenciais do Google Cloud.
+        // Estamos mudando para Content-Type: 'text/plain' para evitar o preflight request de CORS.
         const backendUrl = "https://script.google.com/macros/s/AKfycbxZL3omg_nLNqgpqY9M1uWt0vK262cOkSjPkID1_qsnIG5e3eWt4y6ZlZdJ13eHunaI/exec";
 
         const res = await fetch(backendUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: response.credential })
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: response.credential, // Enviando o token diretamente como texto
+          redirect: "follow", // Opcional, mas pode ajudar em alguns casos
         });
 
         if (!res.ok) {
