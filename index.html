@@ -7,14 +7,14 @@
   <body>
     <h2>Login com Google</h2>
     <div id="g_id_onload"
-         data-client_id="SEU_CLIENT_ID_AQUI"
+         data-client_id="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"
          data-callback="handleCredentialResponse">
     </div>
     <div class="g_id_signin" data-type="standard"></div>
 
     <script>
       function handleCredentialResponse(response) {
-        fetch("URL_DO_SEU_WEBAPP", {
+        fetch("https://script.google.com/macros/s/AKfycbxa9SlxVeoNgD0TR5QbrIZleBH_x-WRh3ue6jrD1MUUIafbj3BTfVgQJiE78I4Hz6TZ/exec", {
           method: "POST",
           body: JSON.stringify({ token: response.credential }),
           headers: {
