@@ -22,8 +22,9 @@
           }
         })
         .then(r => r.text())
-        .then(r => {
-          document.body.innerHTML = r; // Redireciona para a planilha
+        .then(html => {
+          // Exibe o HTML retornado pelo Apps Script (faz o redirecionamento)
+          document.body.innerHTML = html;
         });
       }
     </script>
