@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Login com Google para Planilha</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-  </head>
-  <body>
-    <h2>Login com Google</h2>
-    <div id="g_id_onload"
-         data-client_id="1028119812736-rp5m9cnbplccdqbcsltd7gvt140dtaod.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
-    </div>
-    <div class="g_id_signin" data-type="standard"></div>
+<head>
+  <meta charset="UTF-8">
+  <title>Login com Google para Planilha</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <h2>Login com Google</h2>
 
-    <script>
-      function handleCredentialResponse(response) {
-        fetch("https://script.google.com/macros/s/AKfycbzMrMJpI5yHzbvU2hADYRsSnDxSkDjk_NwUTnO23uhmNawdxUjTh34wDT8-AUnpfXcq/exec", {
-          method: "POST",
-          body: JSON.stringify({ token: response.credential }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        })
-        .then(r => r.text())
-        .then(html => {
-          // Insere o HTML (para mensagens de erro)
-          document.body.innerHTML = html;
+  <!-- Configuração do Google One Tap -->
+  <div id="g_id_onload"
+       data-client_id="1028119812736-rp5m9cnbplccdqbcsltd7gvt140dtaod.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse">
+  </div>
+  <div class="g_id_signin" data-type="standard"></div>
 
-          // Executa o script de redirecionamento se existir!
-          const match = html.match(/<script>([\s\S]*?)<\/script>/i);
-          if (match && match[1]) {
-            eval(match[1]);
-          }
-        });
-      }
-    </script>
-  </body>
+  <script>
+    function handleCredentialResponse(response) {
+      // Envia o token para o backend
+      fetch("https://script.google.com/macros/s/AKfycbwQSdpfdcckK_CifR1OLQ2SuFWN45EbO9x5y2ib9DkIzJcc0IB-LuImHqKH4mvekw/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          // Redireciona para a planilha
+          window.location.href = data.url;
+        } else {
+          alert(data.message || "Falha no login");
+        }
+      })
+      .catch(err => {
+        alert("Erro de conexão: " + err);
+      });
+    }
+  </script>
+</body>
 </html>
